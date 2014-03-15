@@ -1,0 +1,17 @@
+#!/bin/sh 
+
+# by Robert Campbell <rsc@indra.com>
+
+set -e
+
+# set defaults
+output="compositeanim"
+#bitrate=5000
+#fps=30
+
+seed=`head -1 composefiles`
+cp $seed composite_temp.jpg
+for jpg in `cat composefiles`; do newf=`echo $jpg | awk -F'.jpg' '{print $1}'`; convert -compose lighten -composite $jpg composite_temp.jpg ${newf}-tmp.jpg; cp ${newf}-tmp.jpg composite_temp.jpg; echo ${newf}-tmp.jpg >> compositeanimfiles; echo $jpg done; done
+
+mencoder "mf://@compositeanimfiles" -mf fps=30 -o ${output}.avi -ovc lavc -lavcopts vcodec=msmpeg4v2:vbitrate=5000
+#mencoder "mf://@compositeanimfiles" -mf fps=30 -o ${output}.avi -ovc lavc -vf scale=1024:768 -lavcopts vcodec=msmpeg4v2:vbitrate=5000
